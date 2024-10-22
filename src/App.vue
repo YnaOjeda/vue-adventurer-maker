@@ -1,11 +1,13 @@
-<script setup lang="ts"></script>
-
 <template>
   <header>
     <p>Hello World Header</p>
   </header>
 
   <main>
-    <p>Hello World</p>
+    <Adventurer :size="100" :hair="{ variant: 'hair-17', color: 'purple' }" />
   </main>
 </template>
+
+<script setup lang="ts">
+import { Adventurer } from 'vue-adventurer'
+</script>
