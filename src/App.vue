@@ -1,13 +1,9 @@
 <template>
-  <header>
-    <p>Hello World Header</p>
-  </header>
-
   <main>
-    <Adventurer :size="100" :hair="{ variant: 'hair-17', color: 'purple' }" />
+    <AvatarMaker />
   </main>
 </template>
 
 <script setup lang="ts">
-import { Adventurer } from 'vue-adventurer'
+import AvatarMaker from '@/pages/AvatarMaker.vue'
 </script>
