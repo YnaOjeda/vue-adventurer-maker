@@ -95,6 +95,11 @@ const setVariant = (featureKey: FeatureType, variant?: string) => {
     return
   }
 
+  // variant has value
+  if (!selectedFeatures.value[featureKey]) {
+    selectedFeatures.value[featureKey] = {}
+  }
+
   if (selectedFeatures.value[featureKey]) {
     selectedFeatures.value[featureKey].variant = variant
   }

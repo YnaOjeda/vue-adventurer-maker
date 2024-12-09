@@ -4,11 +4,18 @@
       v-if="FeatureOptional[featureKey]"
       :class="{
         'feature-button': true,
-        'empty-variant': true,
         'selected-feature': isSelected(undefined),
       }"
       @click="emit('setVariant', featureKey, undefined)"
-    ></button>
+    >
+      <svg
+        height="150"
+        width="150"
+        viewBox="0 0 1024 1024"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      />
+    </button>
     <button
       v-for="variant in variantKeys"
       :class="{
@@ -84,9 +91,5 @@ const isSelected = (variant?: string) => {
   &.selected-feature {
     border: 3px solid var(--p-primary-color);
   }
-}
-.empty-variant {
-  width: 150px;
-  height: 150px;
 }
 </style>
