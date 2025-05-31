@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- Add a button for "no feature" option -->
     <button
       v-if="FeatureOptional[featureKey]"
       :class="{
@@ -16,6 +17,7 @@
         xmlns="http://www.w3.org/2000/svg"
       />
     </button>
+    <!-- Display the features -->
     <button
       v-for="variant in variantKeys"
       :class="{
@@ -35,7 +37,7 @@
         <FeatureGenerator
           :feature-key="featureKey"
           :variant="variant"
-          :color="featureData.color"
+          :color="featureData?.color"
         />
       </svg>
     </button>
@@ -53,7 +55,7 @@ import {
 } from 'vue-adventurer'
 
 const props = defineProps<{
-  featureData: FeatureBaseProps
+  featureData?: FeatureBaseProps
   featureKey: FeatureType
 }>()
 
@@ -70,9 +72,13 @@ const variantKeys = computed(() => {
   return Object.keys(featureVariants)
 })
 
-const selectedVariant = computed(() => props.featureData.variant)
+const selectedVariant = computed(() => props.featureData?.variant)
 
 const isSelected = (variant?: string) => {
+  if (!variant) {
+    // variant chosen is none
+    return !variant && !selectedVariant.value
+  }
   return variant === selectedVariant.value
 }
 </script>

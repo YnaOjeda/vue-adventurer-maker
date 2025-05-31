@@ -42,7 +42,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Adventurer, FeatureKey } from 'vue-adventurer'
+import { Adventurer, FeatureKey, FeatureOptional } from 'vue-adventurer'
 import type {
   AdventurerProps,
   FeatureType,
@@ -60,7 +60,7 @@ const face = ref<AdventurerProps['face']>({})
 
 const selectedFeatures = ref({
   [FeatureKey.hair]: {
-    variant: 'hair-2',
+    variant: 'hair-1',
     color: undefined,
   },
   [FeatureKey.eyes]: {
@@ -75,29 +75,27 @@ const selectedFeatures = ref({
     variant: 'mouth-1',
     color: undefined,
   },
-  [FeatureKey.glasses]: {
-    variant: 'glasses-1',
-    color: undefined,
-  },
-  [FeatureKey.earrings]: {
-    variant: 'earring-1',
-    color: undefined,
-  },
-  [FeatureKey.marking]: {
-    variant: 'marking-1',
-    color: undefined,
-  },
+  [FeatureKey.glasses]: undefined,
+  [FeatureKey.earrings]: undefined,
+  [FeatureKey.marking]: undefined,
 } as AdventurerProps)
 
 const setVariant = (featureKey: FeatureType, variant?: string) => {
   if (!variant) {
+    if (!FeatureOptional[featureKey]) {
+      return // only allow undefined variants if feature is optional
+    }
+
     selectedFeatures.value[featureKey] = undefined
     return
   }
 
-  // variant has value
+  // variant has value, but check if feature object is defined
   if (!selectedFeatures.value[featureKey]) {
-    selectedFeatures.value[featureKey] = {}
+    selectedFeatures.value[featureKey] = {
+      variant: undefined,
+      color: undefined,
+    }
   }
 
   if (selectedFeatures.value[featureKey]) {
