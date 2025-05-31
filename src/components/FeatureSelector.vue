@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="grid-container">
     <!-- Add a button for "no feature" option -->
     <button
       v-if="FeatureOptional[featureKey]"
@@ -10,8 +10,8 @@
       @click="emit('setVariant', featureKey, undefined)"
     >
       <svg
-        height="150"
-        width="150"
+        height="100%"
+        width="100%"
         viewBox="0 0 1024 1024"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -28,8 +28,8 @@
       @click="emit('setVariant', featureKey, variant)"
     >
       <svg
-        height="150"
-        width="150"
+        height="100%"
+        width="100%"
         viewBox="0 0 1024 1024"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -84,12 +84,39 @@ const isSelected = (variant?: string) => {
 </script>
 
 <style lang="less" scoped>
+@import '@/styles/spacing.less';
+
+.grid-container {
+  display: grid;
+  padding-top: 0.5rem;
+  gap: 1rem;
+
+  @media (max-width: @breakpoint-sm) {
+    grid-template-columns: repeat(3, 1fr);
+    padding-top: 0.75rem;
+  }
+
+  @media (min-width: @breakpoint-sm) and (max-width: @breakpoint-m) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  @media (min-width: @breakpoint-m) and (max-width: @breakpoint-l) {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  @media (min-width: @breakpoint-l) {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
 .feature-button {
-  margin: 0.5rem;
   border: 1px solid var(--p-gray-300);
   border-radius: 0.5rem;
   cursor: pointer;
   background-color: var(--p-gray-100);
+  width: 100%;
+  height: 100%;
+
   &:hover {
     border: 3px solid var(--p-primary-color);
     background-color: var(--p-gray-300);
