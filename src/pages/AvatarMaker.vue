@@ -14,29 +14,31 @@
       />
     </div>
 
-    <Tabs :value="FeatureTabs[0]" scrollable>
-      <TabList>
-        <Tab
-          v-for="tab in FeatureTabs"
-          :key="`feature-tab-${tab}`"
-          :value="tab"
-          >{{ tab }}</Tab
-        >
-      </TabList>
-      <TabPanels>
-        <TabPanel
-          v-for="tab in FeatureTabs"
-          :key="`feature-tab-panel-${tab}`"
-          :value="tab"
-        >
-          <FeatureSelector
-            :feature-key="tab"
-            :feature-data="selectedFeatures[tab] as FeatureBaseProps"
-            @set-variant="setVariant"
-          />
-        </TabPanel>
-      </TabPanels>
-    </Tabs>
+    <div class="feature-selector-area">
+      <Tabs :value="FeatureTabs[0]" scrollable>
+        <TabList>
+          <Tab
+            v-for="tab in FeatureTabs"
+            :key="`feature-tab-${tab}`"
+            :value="tab"
+            >{{ tab }}</Tab
+          >
+        </TabList>
+        <TabPanels>
+          <TabPanel
+            v-for="tab in FeatureTabs"
+            :key="`feature-tab-panel-${tab}`"
+            :value="tab"
+          >
+            <FeatureSelector
+              :feature-key="tab"
+              :feature-data="selectedFeatures[tab] as FeatureBaseProps"
+              @set-variant="setVariant"
+            />
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
+    </div>
   </div>
 </template>
 
@@ -108,12 +110,15 @@ const setVariant = (featureKey: FeatureType, variant?: string) => {
 @import '@/styles/spacing.less';
 @import '@/styles/colors.less';
 
-@banner-height: 300px;
+@banner-height: max(30vh, 150px);
 @banner-width: 100%;
+@menu-height: 48px;
 
 .page-container {
   height: 100vh;
   background-color: var(--p-content-background);
+  position: relative;
+  overflow-y: hidden;
 
   @media (max-width: @breakpoint-m) {
     width: 100vw;
@@ -130,5 +135,30 @@ const setVariant = (featureKey: FeatureType, variant?: string) => {
   height: @banner-height;
   justify-content: center;
   display: flex;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background-color: var(--p-content-background);
+}
+
+.feature-selector-area {
+  margin-top: @banner-height;
+  position: relative;
+
+  :deep(.p-tablist) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+  }
+
+  :deep(.p-tabpanels) {
+    margin-top: @menu-height;
+    height: calc(100vh - @banner-height - @menu-height);
+    overflow-y: scroll;
+  }
 }
 </style>
