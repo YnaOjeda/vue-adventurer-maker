@@ -34,6 +34,7 @@
               :feature-key="tab"
               :feature-data="selectedFeatures[tab] as FeatureBaseProps"
               @set-variant="setVariant"
+              @set-color="setColor"
             />
           </TabPanel>
         </TabPanels>
@@ -100,9 +101,15 @@ const setVariant = (featureKey: FeatureType, variant?: string) => {
     }
   }
 
-  if (selectedFeatures.value[featureKey]) {
-    selectedFeatures.value[featureKey].variant = variant
+  selectedFeatures.value[featureKey].variant = variant
+}
+
+const setColor = (featureKey: FeatureType, color?: string) => {
+  if (!color || !selectedFeatures.value[featureKey]) {
+    return
   }
+
+  selectedFeatures.value[featureKey].color = `#${color}`
 }
 </script>
 

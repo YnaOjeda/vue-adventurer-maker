@@ -1,5 +1,11 @@
 <template>
   <div class="grid-container">
+    <ColorPicker
+      format="hex"
+      :model-value="selectedColor"
+      :disabled="!FeatureInfo[featureKey]?.defaultColor || !featureData"
+      @update:model-value="val => onColorPicked(featureKey, val)"
+    />
     <!-- Add a button for "no feature" option -->
     <button
       v-if="FeatureOptional[featureKey]"
@@ -45,7 +51,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import {
   type FeatureBaseProps,
   FeatureGenerator,
@@ -54,15 +60,20 @@ import {
   type FeatureType,
 } from 'vue-adventurer'
 
+import { ColorPicker } from 'primevue'
+
 const props = defineProps<{
-  featureData?: FeatureBaseProps
-  featureKey: FeatureType
+  featureData?: FeatureBaseProps // determines which option is selected
+  featureKey: FeatureType // determines the type of options displayed
 }>()
 
 const emit = defineEmits<{
-  (e: 'setVariant', featureKey: FeatureType, variant?: string): void
+  (e: 'setVariant', featureKey: FeatureType, variant?: string): void // for selecting a tile
+  (e: 'setColor', featureKey: FeatureType, color?: string): void // for changing the color
+  (e: 'update:modelValue', value: string): void
 }>()
 
+// Keys for the tiles to be displayed
 const variantKeys = computed(() => {
   const featureKey = props.featureKey
   const featureVariants = FeatureInfo[featureKey]?.variants
@@ -72,14 +83,37 @@ const variantKeys = computed(() => {
   return Object.keys(featureVariants)
 })
 
+// For debouncing too many color changes in a short amount of time
+const colorSelectionTimeout = ref(null)
+
+// Selected tile/option
 const selectedVariant = computed(() => props.featureData?.variant)
 
+// Selected color
+const selectedColor = computed(
+  () =>
+    props.featureData?.color ?? // user-selected color
+    FeatureInfo[props.featureKey]?.defaultColor ??
+    '#b0b0b0',
+)
+
+// Determines which tile/option is selected
 const isSelected = (variant?: string) => {
   if (!variant) {
     // variant chosen is none
     return !variant && !selectedVariant.value
   }
   return variant === selectedVariant.value
+}
+
+const onColorPicked = (featureKey: FeatureType, color: string) => {
+  // Cancel previous updates in the last 300ms
+  // Because we are overwriting it with color
+  clearTimeout(colorSelectionTimeout.value)
+  // Update color after 300ms
+  colorSelectionTimeout.value = setTimeout(() => {
+    emit('setColor', featureKey, color)
+  }, 200)
 }
 </script>
 
@@ -90,6 +124,12 @@ const isSelected = (variant?: string) => {
   display: grid;
   padding-top: 0.5rem;
   gap: 1rem;
+  position: relative;
+
+  :deep(.p-colorpicker-preview) {
+    width: 100%;
+    height: 100%;
+  }
 
   @media (max-width: @breakpoint-sm) {
     grid-template-columns: repeat(3, 1fr);
