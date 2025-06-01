@@ -1,11 +1,5 @@
 <template>
   <div class="grid-container">
-    <ColorPicker
-      format="hex"
-      :model-value="selectedColor"
-      :disabled="!FeatureInfo[featureKey]?.defaultColor || !featureData"
-      @update:model-value="val => onColorPicked(featureKey, val)"
-    />
     <!-- Add a button for "no feature" option -->
     <button
       v-if="FeatureOptional[featureKey]"
@@ -51,7 +45,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import {
   type FeatureBaseProps,
   FeatureGenerator,
@@ -59,8 +53,6 @@ import {
   FeatureOptional,
   type FeatureType,
 } from 'vue-adventurer'
-
-import { ColorPicker } from 'primevue'
 
 const props = defineProps<{
   featureData?: FeatureBaseProps // determines which option is selected
@@ -83,19 +75,8 @@ const variantKeys = computed(() => {
   return Object.keys(featureVariants)
 })
 
-// For debouncing too many color changes in a short amount of time
-const colorSelectionTimeout = ref(null)
-
 // Selected tile/option
 const selectedVariant = computed(() => props.featureData?.variant)
-
-// Selected color
-const selectedColor = computed(
-  () =>
-    props.featureData?.color ?? // user-selected color
-    FeatureInfo[props.featureKey]?.defaultColor ??
-    '#b0b0b0',
-)
 
 // Determines which tile/option is selected
 const isSelected = (variant?: string) => {
@@ -104,16 +85,6 @@ const isSelected = (variant?: string) => {
     return !variant && !selectedVariant.value
   }
   return variant === selectedVariant.value
-}
-
-const onColorPicked = (featureKey: FeatureType, color: string) => {
-  // Cancel previous updates in the last 300ms
-  // Because we are overwriting it with color
-  clearTimeout(colorSelectionTimeout.value)
-  // Update color after 300ms
-  colorSelectionTimeout.value = setTimeout(() => {
-    emit('setColor', featureKey, color)
-  }, 200)
 }
 </script>
 

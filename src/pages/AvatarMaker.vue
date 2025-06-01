@@ -40,7 +40,6 @@
               :feature-key="tab"
               :feature-data="selectedFeatures[tab] as FeatureBaseProps"
               @set-variant="setVariant"
-              @set-color="setColor"
             />
           </TabPanel>
         </TabPanels>
@@ -119,7 +118,6 @@ const setColor = (featureKey: FeatureType, color?: string) => {
   }
 
   // check if color starts with #
-
   selectedFeatures.value[featureKey].color = color.startsWith('#')
     ? color
     : `#${color}`
