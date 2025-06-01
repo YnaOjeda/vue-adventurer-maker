@@ -16,7 +16,7 @@
           id="color-text-input"
           :model-value="selectedColor"
           :disabled="isColorPickerDisabled"
-          @update:model-value="val => onColorPicked(featureKey, val)"
+          @update:model-value="(val?: string) => onColorPicked(featureKey, val)"
         />
         <label for="color-text-input">color</label>
       </FloatLabel>
@@ -27,6 +27,32 @@
       :pt="ButtonStyle"
       @click="emit('downloadAdventurer')"
     />
+    <Button
+      icon="pi pi-user"
+      severity="secondary"
+      rounded
+      aria-label="User"
+      size="small"
+      class="icon-button"
+      @click="toggleAttributionPopover"
+    />
+    <Popover ref="attributionPopOver">
+      <div class="popover-container">
+        <span>
+          Assets are designed by
+          <a href="https://www.instagram.com/lischi_art/" target="_blank">
+            Lisa Wischofsky
+          </a>
+          and was modified under
+          <a
+            href="https://creativecommons.org/licenses/by/4.0/"
+            target="_blank"
+          >
+            CC BY 4.0
+          </a>
+        </span>
+      </div>
+    </Popover>
   </div>
 </template>
 
@@ -38,6 +64,7 @@ import InputText from 'primevue/inputtext'
 import ColorPicker from 'primevue/colorpicker'
 import FloatLabel from 'primevue/floatlabel'
 import Button from 'primevue/button'
+import Popover from 'primevue/popover'
 import { FeatureInfo, type FeatureType } from 'vue-adventurer'
 
 const props = defineProps<{
@@ -49,6 +76,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'setColor', featureKey: FeatureType, color?: string): void // for changing the color
   (e: 'downloadAdventurer'): void
+  (e: 'showAttributionPopup'): void
 }>()
 
 const ButtonStyle = {
@@ -60,18 +88,19 @@ const ButtonStyle = {
   },
 }
 
+const colorSelectionTimeout = ref<Timeout | null>(null)
+const attributionPopOver = ref(null)
 const selectedColor = computed(
   () =>
     props.currentColor ??
     FeatureInfo[props.featureKey]?.defaultColor ??
     '#b0b0b0',
 )
-const colorSelectionTimeout = ref<Timeout | null>(null)
 const isColorPickerDisabled = computed(
   () => !FeatureInfo[props.featureKey]?.defaultColor || props.disabled,
 )
 
-const onColorPicked = (featureKey: FeatureType, color: string) => {
+const onColorPicked = (featureKey: FeatureType, color?: string) => {
   // Cancel previous updates in the last 300ms
   // Because we are overwriting it with color
   clearTimeout(colorSelectionTimeout.value)
@@ -79,6 +108,10 @@ const onColorPicked = (featureKey: FeatureType, color: string) => {
   colorSelectionTimeout.value = setTimeout(() => {
     emit('setColor', featureKey, color)
   }, 200)
+}
+
+const toggleAttributionPopover = (event: Event) => {
+  attributionPopOver.value?.toggle?.(event)
 }
 </script>
 
@@ -91,6 +124,7 @@ const onColorPicked = (featureKey: FeatureType, color: string) => {
   display: flex;
   padding: 0 1.125rem;
   gap: 1rem;
+  align-items: center;
 
   label {
     font-size: 0.75rem;
@@ -99,10 +133,21 @@ const onColorPicked = (featureKey: FeatureType, color: string) => {
   .checkbox-gap {
     gap: 0.25rem;
   }
+
+  .icon-button {
+    width: 40px;
+    height: 40px;
+  }
 }
 
 .p-color-picker-overlay-custom {
   z-index: 2;
+}
+
+.popover-container {
+  max-width: 300px;
+  font-size: 1rem;
+  line-height: 1.5rem;
 }
 </style>
 
