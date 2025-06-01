@@ -1,5 +1,6 @@
 <template>
   <div class="page-container">
+    <Toast />
     <div class="banner">
       <Adventurer
         :size="'100%'"
@@ -11,12 +12,14 @@
         :glasses="selectedFeatures.glasses"
         :earrings="selectedFeatures.earrings"
         :hair="selectedFeatures.hair"
+        ref="adventurerComponent"
       />
       <OptionsBar
         :feature-key="activeTab"
         :disabled="!selectedFeatures[activeTab]"
         :current-color="selectedFeatures[activeTab]?.color"
         @setColor="setColor"
+        @download-adventurer="downloadSvg"
       />
     </div>
 
@@ -63,7 +66,11 @@ import Tab from 'primevue/tab'
 import TabPanels from 'primevue/tabpanels'
 import TabPanel from 'primevue/tabpanel'
 import FeatureSelector from '@/components/FeatureSelector.vue'
+import Toast from 'primevue/toast'
 import OptionsBar from '@/components/OptionsBar.vue'
+import { useToast } from 'primevue/usetoast'
+
+const toast = useToast()
 
 const face = ref<AdventurerProps['face']>({})
 
@@ -90,6 +97,8 @@ const selectedFeatures = ref({
 } as AdventurerProps)
 
 const activeTab = ref(FeatureKey.hair)
+
+const adventurerComponent = ref(null)
 
 const setVariant = (featureKey: FeatureType, variant?: string) => {
   if (!variant) {
@@ -121,6 +130,39 @@ const setColor = (featureKey: FeatureType, color?: string) => {
   selectedFeatures.value[featureKey].color = color.startsWith('#')
     ? color
     : `#${color}`
+}
+
+const downloadSvg = () => {
+  // Try to get the root DOM element of the component
+  const rootEl = adventurerComponent.value?.$el ?? adventurerComponent.value
+  // Query for the <svg> inside or check if rootEl is itself <svg>
+  const svg =
+    rootEl?.querySelector?.('svg') ??
+    (rootEl instanceof SVGSVGElement ? rootEl : null)
+  if (!svg) {
+    toast.add({
+      severity: 'error',
+      summary: 'Failed to Download',
+      detail: 'Could not find the adventurer svg',
+      life: 3000,
+    })
+    return
+  }
+
+  const serializer = new XMLSerializer()
+  const source = serializer.serializeToString(svg)
+
+  const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+
+  const link = document.createElement('a')
+  link.href = url
+  link.download = 'downloaded-adventurer.svg'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+
+  URL.revokeObjectURL(url)
 }
 </script>
 

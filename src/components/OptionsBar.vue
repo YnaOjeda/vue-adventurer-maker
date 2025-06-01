@@ -21,8 +21,12 @@
         <label for="color-text-input">color</label>
       </FloatLabel>
     </InputGroup>
-    <!-- TODO: Download button -->
-    <Button label="DOWNLOAD" severity="secondary" :pt="ButtonStyle" />
+    <Button
+      label="DOWNLOAD"
+      severity="secondary"
+      :pt="ButtonStyle"
+      @click="emit('downloadAdventurer')"
+    />
   </div>
 </template>
 
@@ -44,6 +48,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'setColor', featureKey: FeatureType, color?: string): void // for changing the color
+  (e: 'downloadAdventurer'): void
 }>()
 
 const ButtonStyle = {
@@ -51,14 +56,6 @@ const ButtonStyle = {
     style: {
       'font-size': '0.75rem',
       padding: '0.5rem',
-    },
-  },
-}
-
-const ColorPickerPT = {
-  root: {
-    style: {
-      'z-Index': 10,
     },
   },
 }
