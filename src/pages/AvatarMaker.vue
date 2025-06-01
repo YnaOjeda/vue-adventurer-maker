@@ -12,10 +12,16 @@
         :earrings="selectedFeatures.earrings"
         :hair="selectedFeatures.hair"
       />
+      <OptionsBar
+        :feature-key="activeTab"
+        :disabled="!selectedFeatures[activeTab]"
+        :current-color="selectedFeatures[activeTab]?.color"
+        @setColor="setColor"
+      />
     </div>
 
     <div class="feature-selector-area">
-      <Tabs :value="FeatureTabs[0]" scrollable>
+      <Tabs v-model:value="activeTab" scrollable>
         <TabList>
           <Tab
             v-for="tab in FeatureTabs"
@@ -58,6 +64,7 @@ import Tab from 'primevue/tab'
 import TabPanels from 'primevue/tabpanels'
 import TabPanel from 'primevue/tabpanel'
 import FeatureSelector from '@/components/FeatureSelector.vue'
+import OptionsBar from '@/components/OptionsBar.vue'
 
 const face = ref<AdventurerProps['face']>({})
 
@@ -82,6 +89,8 @@ const selectedFeatures = ref({
   [FeatureKey.earrings]: undefined,
   [FeatureKey.marking]: undefined,
 } as AdventurerProps)
+
+const activeTab = ref(FeatureKey.hair)
 
 const setVariant = (featureKey: FeatureType, variant?: string) => {
   if (!variant) {
@@ -109,7 +118,11 @@ const setColor = (featureKey: FeatureType, color?: string) => {
     return
   }
 
-  selectedFeatures.value[featureKey].color = `#${color}`
+  // check if color starts with #
+
+  selectedFeatures.value[featureKey].color = color.startsWith('#')
+    ? color
+    : `#${color}`
 }
 </script>
 
@@ -117,8 +130,8 @@ const setColor = (featureKey: FeatureType, color?: string) => {
 @import '@/styles/spacing.less';
 @import '@/styles/colors.less';
 
-@banner-height: max(30vh, 150px);
-@banner-width: 100%;
+@options-bar-height: 36px;
+@banner-height: calc(max(25vh, 150px) + @options-bar-height);
 @menu-height: 48px;
 
 .page-container {
@@ -142,6 +155,7 @@ const setColor = (featureKey: FeatureType, color?: string) => {
   height: @banner-height;
   justify-content: center;
   display: flex;
+  flex-direction: column;
   position: absolute;
   top: 0;
   left: 0;
