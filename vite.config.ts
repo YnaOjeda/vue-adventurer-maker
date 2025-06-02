@@ -6,6 +6,7 @@ import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/vue-adventurer-maker',
   plugins: [vue(), vueJsx(), vueDevTools()],
   resolve: {
     alias: {
