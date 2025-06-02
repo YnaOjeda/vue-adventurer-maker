@@ -1,5 +1,7 @@
 # vue-adventurer-maker
-An app to showcase the Adventurer avatar maker
+An app to showcase the Adventurer avatar maker.
+
+🔗 [See demo here](https://ynaojeda.github.io/vue-adventurer-maker/).
 
 ## Project Setup
 
