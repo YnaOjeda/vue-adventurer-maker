@@ -4,7 +4,7 @@
     <div class="banner">
       <Adventurer
         :size="'100%'"
-        :face="face"
+        :face="selectedFeatures.face"
         :marking="selectedFeatures.marking"
         :mouth="selectedFeatures.mouth"
         :eyes="selectedFeatures.eyes"
@@ -16,7 +16,6 @@
       />
       <OptionsBar
         :feature-key="activeTab"
-        :disabled="!selectedFeatures[activeTab]"
         :current-color="selectedFeatures[activeTab]?.color"
         @setColor="setColor"
         @download-adventurer="downloadSvg"
@@ -30,8 +29,9 @@
             v-for="tab in FeatureTabs"
             :key="`feature-tab-${tab}`"
             :value="tab"
-            >{{ tab }}</Tab
           >
+            {{ tab }}
+          </Tab>
         </TabList>
         <TabPanels>
           <TabPanel
@@ -72,9 +72,11 @@ import { useToast } from 'primevue/usetoast'
 
 const toast = useToast()
 
-const face = ref<AdventurerProps['face']>({})
-
 const selectedFeatures = ref({
+  [FeatureKey.face]: {
+    variant: 'face-1',
+    color: undefined,
+  },
   [FeatureKey.hair]: {
     variant: 'hair-1',
     color: undefined,
@@ -96,34 +98,31 @@ const selectedFeatures = ref({
   [FeatureKey.marking]: undefined,
 } as AdventurerProps)
 
-const activeTab = ref(FeatureKey.hair)
+const activeTab = ref(FeatureTabs[0])
 
 const adventurerComponent = ref(null)
 
 const setVariant = (featureKey: FeatureType, variant?: string) => {
-  if (!variant) {
-    if (!FeatureOptional[featureKey]) {
-      return // only allow undefined variants if feature is optional
-    }
-
-    selectedFeatures.value[featureKey] = undefined
-    return
+  if (!variant && !FeatureOptional[featureKey]) {
+    return // only allow undefined variants if feature is optional
   }
 
   // variant has value, but check if feature object is defined
   if (!selectedFeatures.value[featureKey]) {
-    selectedFeatures.value[featureKey] = {
-      variant: undefined,
-      color: undefined,
-    }
+    selectedFeatures.value[featureKey] = {}
   }
 
   selectedFeatures.value[featureKey].variant = variant
 }
 
 const setColor = (featureKey: FeatureType, color?: string) => {
-  if (!color || !selectedFeatures.value[featureKey]) {
+  if (!color) {
     return
+  }
+
+  // variant has value, but check if feature object is defined
+  if (!selectedFeatures.value[featureKey]) {
+    selectedFeatures.value[featureKey] = {}
   }
 
   // check if color starts with #
