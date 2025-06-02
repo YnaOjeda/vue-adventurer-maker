@@ -80,11 +80,11 @@ const selectedFeatures = ref({
     color: undefined,
   },
   [FeatureKey.eyes]: {
-    variant: 'eye-1',
+    variant: 'eyes-1',
     color: undefined,
   },
   [FeatureKey.brows]: {
-    variant: 'brow-1',
+    variant: 'brows-1',
     color: undefined,
   },
   [FeatureKey.mouth]: {
